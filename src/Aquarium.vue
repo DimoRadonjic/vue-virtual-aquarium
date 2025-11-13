@@ -1,18 +1,33 @@
 <script setup>
 import ActiveFish from "./ActiveFish.vue";
+
+defineProps({
+  fishes: {
+    type: Array,
+    required: true,
+  },
+});
+
+defineEmits(["remove"]);
 </script>
 
 <template>
-  <div class="aquarium w-full h-full">
-    <ActiveFish />
+  <div class="aquarium" id="aquarium">
+    <ActiveFish
+      v-for="fish in fishes"
+      :key="fish"
+      :fish
+      @remove="$emit('remove', fish.id)"
+    />
   </div>
 </template>
 
 <style scoped>
 .aquarium {
-  background-image: url("/bg.jpg");
+  position: relative;
+  width: 100%;
+  background: url("/bg.jpg") no-repeat center center;
   background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  overflow: hidden;
 }
 </style>

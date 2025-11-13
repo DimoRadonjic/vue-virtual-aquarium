@@ -1,29 +1,77 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
-const props = defineProps({
-  fishURL: String,
+defineProps({
+  fish: Object,
 });
 
-const selectedFish = defineModel("selectedFish", { default: "" });
+/* Hunger state */
+const hunger = ref(0);
+const HUNGRY_THRESHOLD = 70;
 
-const selected = ref(false);
+const isHungry = computed(() => hunger.value >= HUNGRY_THRESHOLD);
 
-function selectFish() {
-  selectedFish.value = props.fishURL;
-  selected.value = !selected.value;
+const isDead = computed(() => hunger.value >= 100);
+
+const interval = setInterval(() => {
+  if (hunger.value < 100) {
+    hunger.value++;
+  } else {
+    clearInterval(interval);
+  }
+}, 200);
+
+function feedFish() {
+  hunger.value = 0;
 }
 </script>
 
 <template>
-  <div class="w-32 p-2">
-    <img
-      :src="`/${fishURL}`"
-      alt=""
-      :class="`object-cover hover:drop-shadow-[0_0_5px_#ff8c42] ${selected ? 'drop-shadow-[0_0_10px_#ff8c42]' : ''}`"
-      @click="selectFish()"
-    />
+  <div :class="`${fish.size} p-2  flex flex-col items-center gap-2 fish `">
+    <button
+      v-show="isHungry && !isDead"
+      @click="feedFish"
+      class="speech-bubble"
+    >
+      Feed Me <span class="font-bold text-red-600">!</span>
+    </button>
+
+    <img :src="`/${isDead ? 'dead' : fish.type}.png`" :alt="fish.name" />
+
+    <div class="bg-black rounded bg-opacity-80 text-white overflow-hidden">
+      <h2 class="p-2 rounded">
+        {{ fish.name }}
+      </h2>
+      <div
+        v-show="!isDead"
+        class="h-2 bg-red-500 transition-all duration-300 ease-linear"
+        :style="{
+          width: hunger + '%',
+          backgroundColor: `rgb(${hunger * 2.55}, ${255 - hunger * 2.55}, 0)`,
+        }"
+      ></div>
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.fish {
+  position: relative;
+  /* change to absolute */
+}
+
+.speech-bubble {
+  @apply absolute bottom-[100%] px-4 py-2 rounded-full left-[50%] whitespace-nowrap;
+  background: rgba(255, 255, 255, 0.9);
+}
+.speech-bubble::before {
+  content: "";
+  position: absolute;
+  border-style: solid;
+  border-width: 10px;
+  border-color: transparent rgba(255, 255, 255, 0.9) transparent transparent;
+  top: 99%;
+  left: 50%;
+  transform: translateX(-50%) rotate(-90deg);
+}
+</style>

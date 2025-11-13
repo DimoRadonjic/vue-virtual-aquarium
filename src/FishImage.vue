@@ -1,27 +1,39 @@
 <script setup>
 const props = defineProps({
-  fishURL: String,
+  fish: Object,
   selected: Boolean,
 });
 
-const model = defineModel();
+const model = defineModel({
+  default: {
+    name: "Golden Purple Fish",
+    type: "golden-purple-fish",
+    size: "w-36",
+  },
+});
 
 function selectFish() {
-  if (model.value === props.fishURL) {
-    model.value = "";
+  if (model.value.name === props.fish.name) {
+    model.value = {
+      name: "",
+      type: "",
+      size: "",
+    };
   } else {
-    model.value = props.fishURL;
+    model.value = props.fish;
   }
 }
 </script>
 
 <template>
-  <div class="w-32 p-2">
+  <div :class="`w-32 p-2`">
     <img
-      :src="`/${props.fishURL}`"
+      :src="`/${props.fish.type}.png`"
       alt=""
-      :class="`object-cover hover:drop-shadow-[0_0_5px_#ff8c42] ${
-        selected ? 'drop-shadow-[0_0_10px_#ff8c42]' : ''
+      :class="`object-cover  ${
+        selected
+          ? 'drop-shadow-[0_0_10px_#ff8c42]'
+          : 'hover:drop-shadow-[0_0_5px_#ff8c42]'
       }`"
       @click="selectFish"
     />

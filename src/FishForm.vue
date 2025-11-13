@@ -6,11 +6,22 @@ defineProps({
   availableFishes: Array,
 });
 
-const selectedFish = ref("");
-const fishName = ref("");
+const emit = defineEmits(["add-fish"]);
+
+const selectedFish = ref(null);
+const input = ref(null);
+
+const selectFish = (fish) => {
+  selectedFish.value = fish;
+  input.value = fish.name;
+};
 
 const addFish = () => {
-  console.log("Adding fish:", selectedFish.value);
+  if (selectedFish.value) {
+    emit("add-fish", { ...selectedFish.value, name: input.value });
+    selectedFish.value = null;
+    input.value = null;
+  }
 };
 </script>
 <template>
@@ -20,23 +31,22 @@ const addFish = () => {
     <h1>Fish Type</h1>
     <div class="grid grid-cols-2">
       <FishImage
-        v-for="fishName in availableFishes"
-        :fishURL="fishName"
-        :key="fishName"
-        v-model="selectedFish"
-        :selected="selectedFish === fishName"
+        v-for="availableFish in availableFishes"
+        :fish="availableFish"
+        :key="availableFish"
+        @click="selectFish(availableFish)"
       />
     </div>
-    <form action="" class="flex flex-col gap-6">
+    <form action="" class="flex flex-col gap-6" @submit.prevent="addFish">
       <label for="fishName">Name</label>
-      <input type="text" name="fishName" id="fishInput" class="rounded p-2" />
-      <button
-        type="button"
-        class="bg-red-700 p-5 rounded hover:bg-red-600"
-        @click="addFish"
-      >
-        Add Fish
-      </button>
+      <input
+        v-model="input"
+        type="text"
+        name="fishName"
+        id="fishInput"
+        class="rounded p-2 text-black"
+      />
+      <button class="bg-red-700 p-5 rounded hover:bg-red-600">Add Fish</button>
     </form>
   </div>
 </template>
