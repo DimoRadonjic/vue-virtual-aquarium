@@ -12,12 +12,12 @@ defineEmits(["remove"]);
 </script>
 
 <template>
-  <div class="aquarium" id="aquarium">
+  <div class="aquarium" id="aquarium" ref="fishEl">
     <ActiveFish
       v-for="fish in fishes"
       :key="fish"
       :fish
-      @remove="$emit('remove', fish.id)"
+      @dead="$emit('remove', fish.id)"
     />
   </div>
 </template>

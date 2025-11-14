@@ -18,7 +18,11 @@ const selectFish = (fish) => {
 
 const addFish = () => {
   if (selectedFish.value) {
-    emit("add-fish", { ...selectedFish.value, name: input.value });
+    const id =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+    emit("add-fish", { ...selectedFish.value, id, name: input.value });
     selectedFish.value = null;
     input.value = null;
   }
